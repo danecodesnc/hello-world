@@ -1,5 +1,7 @@
 # Dane Edwards — Agentic AI Support & Automation Portfolio
 
+[![Portfolio Tests](https://github.com/danecodesnc/hello-world/actions/workflows/tests.yml/badge.svg)](https://github.com/danecodesnc/hello-world/actions/workflows/tests.yml)
+
 **Technical Support + APIs + Escalations + Applied AI Automation**
 
 A public, synthetic-data portfolio showing how enterprise Technical Support and API troubleshooting workflows can be extended with **Python, LLM tool calling, RAG-style retrieval, FastAPI, Postman-ready REST endpoints, deterministic guardrails, n8n workflow design, evaluations, and observability**.
@@ -10,11 +12,11 @@ A public, synthetic-data portfolio showing how enterprise Technical Support and 
 
 | Project | What it demonstrates | Public status |
 |---|---|---|
-| **Atlas Support AI Agent** | Support investigation, allow-listed tools, local retrieval, deterministic escalation, optional live LLM tool calling | Runnable offline; live mode requires your own API key |
-| **Incident & Escalation Automation** | P1/P2/P3 routing, human-in-the-loop approval, workflow orchestration, n8n import artifact | Runnable Python logic + importable n8n workflow |
-| **API Diagnostics Agent** | HTTP/API troubleshooting for 400/401/403/404/429/500/503/504, verification plans, cURL guidance | Runnable offline |
-| **FastAPI Support Service** | REST endpoints, Pydantic request/response validation, OpenAPI docs, Postman-ready testing surface | Runnable locally |
-| **Streamlit Demo UI** | Recruiter-friendly browser demonstration of all three workflows | Runnable locally |
+| **[Atlas Support AI Agent](atlas_support_agent/)** | Support investigation, allow-listed tools, local retrieval, deterministic escalation, optional live LLM tool calling | Runnable offline; live mode requires your own API key |
+| **[Incident & Escalation Automation](incident_escalation_automation/)** | P1/P2/P3 routing, human-in-the-loop approval, workflow orchestration, n8n import artifact | Runnable Python logic + importable n8n workflow |
+| **[API Diagnostics Agent](api_diagnostics_agent/)** | HTTP/API troubleshooting for 400/401/403/404/429/500/503/504, verification plans, cURL guidance | Runnable offline |
+| **[FastAPI Support Service](api.py)** | REST endpoints, Pydantic request/response validation, OpenAPI docs, Postman-ready testing surface | Runnable locally |
+| **[Streamlit Demo UI](app.py)** | Recruiter-friendly browser demonstration of all three workflows | Runnable locally |
 
 ## Architecture
 
@@ -176,9 +178,11 @@ A concise explanation:
 
 > “I modernized the support work I already know—API troubleshooting, logs, incident severity, escalation, knowledge retrieval, and customer communication—by building a Python-based agentic support portfolio. The flagship workflow can retrieve evidence, call approved tools, expose REST endpoints through FastAPI, apply deterministic escalation guardrails, and optionally use an LLM through controlled function calling. I kept all public data synthetic so the complete architecture is safe to demonstrate.”
 
-## Verified locally
+See **[INTERVIEW_GUIDE.md](INTERVIEW_GUIDE.md)** for the 30-second pitch, five-minute walkthrough, terminology, demo scenarios, and accuracy boundaries.
 
-The deterministic public suite covers authentication troubleshooting, outage escalation, incident routing, API diagnostics, and the portfolio integration path. Live LLM execution is intentionally separate because it requires a user-provided credential.
+## Verification
+
+The deterministic public suite covers authentication troubleshooting, outage escalation, incident routing, API diagnostics, and REST endpoint behavior. **GitHub Actions is configured to run the suite on every push and pull request.** Live LLM execution is intentionally separate because it requires a user-provided credential.
 
 ---
 
