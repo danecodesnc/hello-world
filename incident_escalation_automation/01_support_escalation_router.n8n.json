@@ -1,0 +1,14 @@
+{
+  "name": "Portfolio - Support Escalation Router",
+  "nodes": [
+    {"parameters": {}, "id": "manual-trigger", "name": "Manual Trigger", "type": "n8n-nodes-base.manualTrigger", "typeVersion": 1, "position": [0, 0]},
+    {"parameters": {"assignments": {"assignments": [{"id": "ticket", "name": "ticket", "value": "Customer CUST-101 reports HTTP 401 after credential rotation. Postman works; production fails.", "type": "string"}]}}, "id": "sample-ticket", "name": "Synthetic Ticket", "type": "n8n-nodes-base.set", "typeVersion": 3.4, "position": [240, 0]},
+    {"parameters": {"jsCode": "const t = ($json.ticket || '').toLowerCase();\nconst high = ['production down','complete outage','security breach','data loss'].some(x => t.includes(x));\nconst p2 = ['401','504','multiple customers','degraded'].some(x => t.includes(x));\nreturn [{ json: { ...$json, severity: high ? 'P1' : (p2 ? 'P2' : 'P3'), human_approval_required: high, route: high ? 'human_escalation_preview' : (p2 ? 'senior_support_review' : 'standard_support') } }];"}, "id": "classify", "name": "Classify + Guardrail", "type": "n8n-nodes-base.code", "typeVersion": 2, "position": [480, 0]}
+  ],
+  "connections": {
+    "Manual Trigger": {"main": [[{"node": "Synthetic Ticket", "type": "main", "index": 0}]]},
+    "Synthetic Ticket": {"main": [[{"node": "Classify + Guardrail", "type": "main", "index": 0}]]}
+  },
+  "active": false,
+  "settings": {}
+}
