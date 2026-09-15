@@ -1,7 +1,7 @@
 # Dane Edwards — Agentic AI Support & Automation Portfolio
 
-[![Portfolio Tests](https://github.com/danecodesnc/hello-world/actions/workflows/tests.yml/badge.svg)](https://github.com/danecodesnc/hello-world/actions/workflows/tests.yml)
-[![n8n Workflow Verification](https://github.com/danecodesnc/hello-world/actions/workflows/n8n-verification.yml/badge.svg)](https://github.com/danecodesnc/hello-world/actions/workflows/n8n-verification.yml)
+[![Portfolio Tests](https://github.com/danecodesnc/dane-agentic-ai-support-portfolio/actions/workflows/tests.yml/badge.svg)](https://github.com/danecodesnc/dane-agentic-ai-support-portfolio/actions/workflows/tests.yml)
+[![n8n Workflow Verification](https://github.com/danecodesnc/dane-agentic-ai-support-portfolio/actions/workflows/n8n-verification.yml/badge.svg)](https://github.com/danecodesnc/dane-agentic-ai-support-portfolio/actions/workflows/n8n-verification.yml)
 
 **Technical Support + APIs + Escalations + Applied AI Automation**
 
