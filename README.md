@@ -1,6 +1,7 @@
 # Dane Edwards — Agentic AI Support & Automation Portfolio
 
 [![Portfolio Tests](https://github.com/danecodesnc/hello-world/actions/workflows/tests.yml/badge.svg)](https://github.com/danecodesnc/hello-world/actions/workflows/tests.yml)
+[![n8n Workflow Verification](https://github.com/danecodesnc/hello-world/actions/workflows/n8n-verification.yml/badge.svg)](https://github.com/danecodesnc/hello-world/actions/workflows/n8n-verification.yml)
 
 **Technical Support + APIs + Escalations + Applied AI Automation**
 
@@ -27,7 +28,7 @@ Want a normal desktop icon? Double-click **`CREATE_DESKTOP_ICON_WINDOWS.bat`** o
 
 ---
 
-A public, synthetic-data portfolio showing how enterprise Technical Support and API troubleshooting workflows can be extended with **Python, LLM tool calling, RAG-style retrieval, FastAPI, Postman-ready REST endpoints, deterministic guardrails, n8n workflow design, evaluations, and observability**.
+A public, synthetic-data portfolio showing how enterprise Technical Support and API troubleshooting workflows can be extended with **Python, LLM tool calling, RAG-style retrieval, FastAPI, Postman-ready REST endpoints, deterministic guardrails, n8n workflow orchestration, evaluations, and observability**.
 
 > **Confidentiality:** Every customer, ticket, log, service-status record, product name, and operational example in this repository is fictional/synthetic. No Avalara or other former-employer proprietary information, credentials, customer data, or internal documentation is included.
 
@@ -46,13 +47,14 @@ The default **Offline deterministic demo** works without an API key and is the s
 
 ## Portfolio projects
 
-| Project | What it demonstrates | Public status |
+| Project | What it demonstrates | Verification status |
 |---|---|---|
-| **[Atlas Support AI Agent](atlas_support_agent/)** | Support investigation, allow-listed tools, local retrieval, deterministic escalation, optional live LLM tool calling | Runnable offline; live mode requires your own API key |
-| **[Incident & Escalation Automation](incident_escalation_automation/)** | P1/P2/P3 routing, human-in-the-loop approval, workflow orchestration, n8n import artifact | Runnable Python logic + importable n8n workflow |
-| **[API Diagnostics Agent](api_diagnostics_agent/)** | HTTP/API troubleshooting for 400/401/403/404/429/500/503/504, verification plans, cURL guidance | Runnable offline |
-| **[FastAPI Support Service](api.py)** | REST endpoints, Pydantic request/response validation, OpenAPI docs, Postman-ready testing surface | Runnable locally |
-| **[Streamlit Demo UI](app.py)** | Recruiter-friendly browser demonstration of the workflows | Live + runnable locally |
+| **[Atlas Support AI Agent](atlas_support_agent/)** | Support investigation, allow-listed tools, local retrieval, deterministic escalation, optional live LLM tool calling | ✅ Offline path regression-tested; ✅ tool-call loop/telemetry CI-tested with a deterministic mock provider; ⏳ real external LLM call requires a private API credential |
+| **[Incident & Escalation Automation](incident_escalation_automation/)** | P1/P2/P3 routing, human-in-the-loop approval, workflow orchestration | ✅ Python logic tested |
+| **[n8n Orchestration Verification](n8n_runner/)** | Trigger → normalization → classification → deterministic guardrail → human-routing decision | ✅ Imported and executed successfully inside the official n8n container in GitHub Actions |
+| **[API Diagnostics Agent](api_diagnostics_agent/)** | HTTP/API troubleshooting for 400/401/403/404/429/500/503/504, verification plans, cURL guidance | ✅ Regression-tested offline |
+| **[FastAPI Support Service](api.py)** | REST endpoints, Pydantic request/response validation, OpenAPI docs, Postman-ready testing surface | ✅ Endpoint behavior tested with FastAPI TestClient; runnable locally |
+| **[Streamlit Demo UI](app.py)** | Recruiter-friendly browser demonstration of the workflows | ✅ Public demo + runnable locally |
 
 ## Architecture
 
@@ -73,6 +75,8 @@ flowchart LR
     P --> H[Human Escalation Preview]
     A -. optional live mode .-> LLM[OpenAI Responses API]
     LLM -. allow-listed function calls .-> A
+    N[n8n Workflow] --> G[Classification + Guardrail]
+    G --> HR[Human Routing]
 ```
 
 ## Why this is an agent rather than just a chatbot
@@ -88,7 +92,22 @@ The portfolio demonstrates:
 - deterministic guardrails for P1/high-risk conditions
 - human approval for consequential escalation actions
 - regression tests for classification and policy behavior
-- telemetry hooks for model, latency, token usage, and tools used in live mode
+- telemetry for model, latency, token usage, and tools used in live mode
+- executable n8n orchestration rather than a diagram-only workflow
+
+## Verification matrix — what is actually proven
+
+| Capability | How it is verified | Current claim boundary |
+|---|---|---|
+| Python support logic | Pytest regression suite | **Verified** |
+| FastAPI endpoints | FastAPI TestClient regression tests | **Verified** |
+| Deterministic escalation guardrails | P1/high-risk regression tests | **Verified** |
+| LLM function-call control loop | Automated test with a deterministic mock provider | **Implementation/loop verified**; this is not the same as a real provider network call |
+| Token + latency telemetry plumbing | Automated loop test | **Instrumentation verified** |
+| n8n orchestration | GitHub Actions imports and executes the workflow in the official n8n container and checks for `verification: PASS` | **Verified real n8n execution** |
+| External OpenAI Responses API execution | Credential-gated manual workflow + `scripts/verify_live_llm.py` | **Ready but not marked verified until a private `OPENAI_API_KEY` is configured and the workflow passes** |
+
+This distinction is intentional. The repository does not label an external LLM call as verified until a real credential-backed run succeeds.
 
 ## For developers: manual local start
 
@@ -139,6 +158,24 @@ OPENAI_API_KEY=your_key_here
 OPENAI_MODEL=gpt-5.6-luna
 ```
 
+Then run the credential-gated verification:
+
+```bash
+python scripts/verify_live_llm.py
+```
+
+A valid verification must observe all of the following before it prints `LIVE_LLM_VERIFICATION_COMPLETE`:
+
+- a real live-mode result;
+- a provider model identifier;
+- non-empty final model output;
+- at least one allow-listed function call;
+- recorded input tokens;
+- recorded output tokens;
+- measured latency.
+
+GitHub also contains a manually triggered **Live LLM Verification** workflow. It is intentionally not shown with a green verification badge until a private repository secret named `OPENAI_API_KEY` exists and a real run succeeds.
+
 Never commit `.env`, credentials, production logs, customer identifiers, or secrets.
 
 ## Repository map
@@ -152,12 +189,20 @@ Never commit `.env`, credentials, production logs, customer identifiers, or secr
 ├── api.py                              # FastAPI + OpenAPI/Postman surface
 ├── requirements.txt
 ├── test_portfolio.py
+├── scripts/
+│   └── verify_live_llm.py              # requires a real private API credential; fails closed
+├── .github/workflows/
+│   ├── tests.yml                       # regression suite
+│   ├── n8n-verification.yml            # imports + executes workflow in official n8n container
+│   └── live-llm-verification.yml       # manual real-provider verification
+├── n8n_runner/
+│   └── workflow.json                   # deterministic executable n8n verification workflow
 ├── atlas_support_agent/
 │   ├── agent.py                        # deterministic evidence-backed investigation
 │   ├── live_agent.py                   # optional Responses API function-calling loop
 │   ├── llm_adapter.py                  # bounded LLM summary helper
 │   ├── test_agent.py
-│   └── README.md
+│   └── test_live_agent_loop.py         # mock-provider tool-loop + telemetry verification
 ├── incident_escalation_automation/
 │   ├── router.py
 │   ├── 01_support_escalation_router.n8n.json
@@ -178,17 +223,19 @@ Never commit `.env`, credentials, production logs, customer identifiers, or secr
 
 **Human-in-the-loop by default.** The public automation creates previews; it does not send real Slack messages, create Jira tickets, modify customer systems, or write production data.
 
+**Verification is evidence-based.** A file existing in the repository is not treated as proof that it ran. The n8n badge comes from an actual containerized import and execution; the external LLM path stays explicitly unverified until a real credential-backed run passes.
+
 ## Interview positioning
 
 This should be described accurately as a **personal portfolio project built from Technical Support domain experience**, not as production AI work performed for a former employer.
 
-> “I modernized the support work I already know—API troubleshooting, logs, incident severity, escalation, knowledge retrieval, and customer communication—by building a Python-based agentic support portfolio. The flagship workflow can retrieve evidence, call approved tools, expose REST endpoints through FastAPI, apply deterministic escalation guardrails, and optionally use an LLM through controlled function calling. I kept all public data synthetic so the complete architecture is safe to demonstrate.”
+> “I modernized the support work I already know—API troubleshooting, logs, incident severity, escalation, knowledge retrieval, and customer communication—by building a Python-based agentic support portfolio. The flagship workflow retrieves synthetic evidence through controlled tools, exposes REST endpoints through FastAPI, applies deterministic escalation guardrails, and includes an optional LLM function-calling path. I also built and actually executed an n8n orchestration workflow in CI. I kept all public data synthetic so the complete architecture is safe to demonstrate.”
 
 See **[INTERVIEW_GUIDE.md](INTERVIEW_GUIDE.md)** for the 30-second pitch, five-minute walkthrough, terminology, demo scenarios, and accuracy boundaries.
 
 ## Verification
 
-The deterministic public suite covers authentication troubleshooting, outage escalation, incident routing, API diagnostics, and REST endpoint behavior. **GitHub Actions runs the suite on every push and pull request.** Live LLM execution remains separate because it requires a user-provided credential.
+The public CI suite covers authentication troubleshooting, outage escalation, incident routing, API diagnostics, REST endpoint behavior, and the internal function-call/telemetry control loop. A separate GitHub Actions workflow imports and executes the n8n workflow in the official n8n container. External OpenAI execution remains credential-gated and is intentionally reported separately until a real run succeeds.
 
 ---
 
