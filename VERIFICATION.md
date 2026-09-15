@@ -19,7 +19,7 @@ This file separates **implemented**, **automated-test verified**, and **real ext
 
 Successful GitHub Actions run:
 
-**https://github.com/danecodesnc/hello-world/actions/runs/35034309127**
+**https://github.com/danecodesnc/dane-agentic-ai-support-portfolio/actions/runs/35034309127**
 
 The verification job:
 
