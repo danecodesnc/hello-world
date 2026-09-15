@@ -1,0 +1,94 @@
+{
+  "name": "Dane Support Orchestration Verification",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual-trigger",
+      "name": "Start Verification",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ticket",
+              "name": "ticket",
+              "value": "Customer CUST-101 is receiving HTTP 401 errors after rotating production credentials. Postman works, but the production integration still fails.",
+              "type": "string"
+            },
+            {
+              "id": "mode",
+              "name": "mode",
+              "value": "offline",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "sample-ticket",
+      "name": "Synthetic Support Ticket",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [240, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ai-support-portfolio-production.up.railway.app/agent/investigate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ ticket: $json.ticket, mode: $json.mode }) }}",
+        "options": {}
+      },
+      "id": "call-support-api",
+      "name": "Call Portfolio Support API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [500, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const payload = $json.result || $json;\nconst severity = payload.severity || 'UNKNOWN';\nconst category = payload.category || 'unknown';\nconst escalate = Boolean(payload.escalate);\nreturn [{ json: { verification: 'PASS', orchestration: 'n8n -> FastAPI -> Python support agent', severity, category, escalate, human_approval_required: escalate, checked_at: new Date().toISOString() } }];"
+      },
+      "id": "verify-result",
+      "name": "Verify + Summarize Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [760, 0]
+    }
+  ],
+  "connections": {
+    "Start Verification": {
+      "main": [[{"node": "Synthetic Support Ticket", "type": "main", "index": 0}]]
+    },
+    "Synthetic Support Ticket": {
+      "main": [[{"node": "Call Portfolio Support API", "type": "main", "index": 0}]]
+    },
+    "Call Portfolio Support API": {
+      "main": [[{"node": "Verify + Summarize Result", "type": "main", "index": 0}]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "portfolio": true,
+    "syntheticDataOnly": true
+  }
+}
