@@ -14,6 +14,11 @@ st.set_page_config(page_title="Dane's AI Support Portfolio", page_icon="🛠️"
 st.title("🛠️ Dane's AI Support & Automation Portfolio")
 st.caption("Technical Support + APIs + Escalations + Applied AI Automation")
 st.info("Everything in this demo is fictional. No real customer or employer data is used.")
+st.markdown(
+    "**Technical review:** [Source code](https://github.com/danecodesnc/hello-world) · "
+    "[60-second reviewer guide](https://github.com/danecodesnc/hello-world/blob/master/REVIEWER_GUIDE.md) · "
+    "[Verification record](https://github.com/danecodesnc/hello-world/blob/master/VERIFICATION.md)"
+)
 
 st.markdown(
     """
@@ -44,25 +49,29 @@ with support_tab:
     )
     ticket = st.text_area("What did the customer report?", value=sample, height=140)
 
+    live_enabled = bool(os.getenv("OPENAI_API_KEY"))
     mode = "Offline deterministic demo"
-    with st.expander("⚙️ Advanced option: choose how the agent runs"):
-        mode = st.radio(
-            "Execution mode",
-            ["Offline deterministic demo", "Live LLM tool-calling (requires OPENAI_API_KEY)"],
-        )
-        st.caption("For a simple demonstration, keep the default Offline mode.")
+    with st.expander("⚙️ Advanced technical note"):
+        if live_enabled:
+            mode = st.radio(
+                "Execution mode",
+                ["Offline deterministic demo", "Live LLM tool-calling"],
+            )
+            st.caption("The public-safe offline path remains the recommended demonstration mode.")
+        else:
+            st.write(
+                "The public demo intentionally uses the reproducible offline path. "
+                "A credential-gated OpenAI Responses API tool-calling implementation is included in the source code and has a separate fail-closed verification gate."
+            )
 
     if st.button("🔍 Analyze Support Ticket", type="primary", use_container_width=True):
         if mode.startswith("Live"):
-            if not os.getenv("OPENAI_API_KEY"):
-                st.error("Live AI mode needs an API key. Choose Offline mode for the public demo.")
-            else:
-                from atlas_support_agent.live_agent import run_live_investigation
+            from atlas_support_agent.live_agent import run_live_investigation
 
-                with st.spinner("Gathering clues and investigating..."):
-                    live_result = run_live_investigation(ticket)
-                st.success("Investigation complete.")
-                st.json(live_result)
+            with st.spinner("Gathering clues and investigating..."):
+                live_result = run_live_investigation(ticket)
+            st.success("Investigation complete.")
+            st.json(live_result)
         else:
             result = investigate(ticket).model_dump()
             st.success("Investigation complete.")
@@ -190,6 +199,7 @@ solution        when risk is high
 - deterministic high-risk guardrails
 - human approval for consequential actions
 - optional OpenAI Responses API function calling
+- real n8n workflow import + execution verified in GitHub Actions
 - regression tests and GitHub Actions CI
         """
     )
