@@ -34,6 +34,34 @@ Given a synthetic support ticket, Atlas can:
 
 The application executes requested functions and returns the results to the model. The model never receives unrestricted access to a production system.
 
+The control-loop implementation is covered by `test_live_agent_loop.py`, which uses a deterministic mock provider to verify function-call handling, tool execution, final-response handling, token counters, tool tracking, and latency plumbing. That test verifies the application logic, but it is intentionally not presented as proof of a real external provider call.
+
+## Real-provider verification
+
+A separate fail-closed verifier is provided at:
+
+```text
+scripts/verify_live_llm.py
+```
+
+With a private `OPENAI_API_KEY` configured, run:
+
+```bash
+python scripts/verify_live_llm.py
+```
+
+The verifier only passes if it observes:
+
+- `mode == live_llm`;
+- a provider model identifier;
+- non-empty final model output;
+- at least one allow-listed function call;
+- input-token telemetry;
+- output-token telemetry;
+- positive end-to-end latency.
+
+The repository also includes a manually triggered GitHub Actions workflow at `.github/workflows/live-llm-verification.yml`. It requires a private GitHub Actions secret named `OPENAI_API_KEY` and fails if the credential is absent.
+
 ## Guardrail model
 
 ```text
@@ -58,7 +86,7 @@ The public implementation bounds:
 - LLM tool rounds;
 - LLM output tokens.
 
-Live mode also returns token-usage and latency telemetry when the API provides it.
+Live mode returns token-usage and latency telemetry when the API provides it.
 
 ## Best demo ticket
 
