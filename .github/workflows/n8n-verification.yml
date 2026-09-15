@@ -13,7 +13,14 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: docker.n8n.io/n8nio/n8n:latest
+      env:
+        N8N_USER_FOLDER: /tmp/n8n-user
+        N8N_DIAGNOSTICS_ENABLED: "false"
     steps:
+      - name: Prepare writable n8n user folder
+        shell: sh
+        run: mkdir -p /tmp/n8n-user
+
       - name: Download portfolio workflow
         shell: sh
         run: |
