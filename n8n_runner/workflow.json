@@ -20,12 +20,6 @@
               "name": "ticket",
               "value": "Customer CUST-101 is receiving HTTP 401 errors after rotating production credentials. Postman works, but the production integration still fails.",
               "type": "string"
-            },
-            {
-              "id": "mode",
-              "name": "mode",
-              "value": "offline",
-              "type": "string"
             }
           ]
         },
@@ -39,32 +33,17 @@
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "https://ai-support-portfolio-production.up.railway.app/agent/investigate",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": true,
-        "contentType": "json",
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ ticket: $json.ticket, mode: $json.mode }) }}",
-        "options": {}
+        "jsCode": "const ticket = String($json.ticket || '').toLowerCase();\nconst highRiskTerms = ['production down','complete outage','security breach','data loss','data corruption','credential leak'];\nconst highRisk = highRiskTerms.find(term => ticket.includes(term));\nlet severity = 'P3';\nlet category = 'integration';\nlet reason = 'Standard support investigation';\nif (highRisk) { severity = 'P1'; category = 'availability_or_security'; reason = `High-risk signal: ${highRisk}`; }\nelse if (ticket.includes('401') || ticket.includes('unauthorized')) { severity = 'P2'; category = 'authentication'; reason = 'Authentication failure after credential rotation'; }\nelse if (ticket.includes('504') || ticket.includes('timeout')) { severity = 'P2'; category = 'performance'; reason = 'Timeout or upstream latency signal'; }\nelse if (ticket.includes('429')) { severity = 'P3'; category = 'rate_limit'; reason = 'Rate-limit signal'; }\nreturn [{ json: { ...$json, severity, category, reason, escalate: severity === 'P1', human_approval_required: severity === 'P1' } }];"
       },
-      "id": "call-support-api",
-      "name": "Call Portfolio Support API",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "id": "classify-guardrail",
+      "name": "Classify + Guardrail",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [500, 0]
     },
     {
       "parameters": {
-        "jsCode": "const payload = $json.result || $json;\nconst severity = payload.severity || 'UNKNOWN';\nconst category = payload.category || 'unknown';\nconst escalate = Boolean(payload.escalate);\nreturn [{ json: { verification: 'PASS', orchestration: 'n8n -> FastAPI -> Python support agent', severity, category, escalate, human_approval_required: escalate, checked_at: new Date().toISOString() } }];"
+        "jsCode": "const valid = ['P1','P2','P3','P4'].includes($json.severity) && Boolean($json.category);\nif (!valid) throw new Error('Verification failed: invalid routing output');\nreturn [{ json: { verification: 'PASS', orchestration: 'n8n trigger -> normalization -> classification -> deterministic guardrail -> human routing', severity: $json.severity, category: $json.category, escalate: Boolean($json.escalate), human_approval_required: Boolean($json.human_approval_required), reason: $json.reason, checked_at: new Date().toISOString() } }];"
       },
       "id": "verify-result",
       "name": "Verify + Summarize Result",
@@ -78,9 +57,9 @@
       "main": [[{"node": "Synthetic Support Ticket", "type": "main", "index": 0}]]
     },
     "Synthetic Support Ticket": {
-      "main": [[{"node": "Call Portfolio Support API", "type": "main", "index": 0}]]
+      "main": [[{"node": "Classify + Guardrail", "type": "main", "index": 0}]]
     },
-    "Call Portfolio Support API": {
+    "Classify + Guardrail": {
       "main": [[{"node": "Verify + Summarize Result", "type": "main", "index": 0}]]
     }
   },
@@ -91,6 +70,7 @@
   "pinData": {},
   "meta": {
     "portfolio": true,
-    "syntheticDataOnly": true
+    "syntheticDataOnly": true,
+    "verificationPurpose": "Demonstrate real n8n orchestration and deterministic human-in-the-loop routing without external credentials."
   }
 }
