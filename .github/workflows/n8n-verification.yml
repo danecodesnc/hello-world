@@ -1,0 +1,39 @@
+name: n8n Workflow Verification
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "n8n_runner/**"
+      - ".github/workflows/n8n-verification.yml"
+  workflow_dispatch:
+
+jobs:
+  execute-n8n-workflow:
+    runs-on: ubuntu-latest
+    container:
+      image: docker.n8n.io/n8nio/n8n:latest
+    steps:
+      - name: Download portfolio workflow
+        shell: sh
+        run: |
+          node -e "fetch('https://raw.githubusercontent.com/danecodesnc/hello-world/master/n8n_runner/workflow.json').then(r=>{if(!r.ok)throw new Error(r.status);return r.text()}).then(t=>require('fs').writeFileSync('/tmp/workflow.json',t))"
+          test -s /tmp/workflow.json
+
+      - name: Import workflow into n8n
+        shell: sh
+        run: n8n import:workflow --input=/tmp/workflow.json
+
+      - name: Resolve imported workflow ID
+        shell: sh
+        run: |
+          n8n export:workflow --all --output=/tmp/workflows.json
+          node -e "const d=JSON.parse(require('fs').readFileSync('/tmp/workflows.json','utf8'));const a=Array.isArray(d)?d:[d];const w=a.find(x=>x.name==='Dane Support Orchestration Verification');if(!w||!w.id)process.exit(2);require('fs').writeFileSync('/tmp/workflow_id',String(w.id));console.log('Imported workflow ID:',w.id);"
+
+      - name: Execute real n8n orchestration
+        shell: sh
+        run: |
+          echo "Executing n8n workflow $(cat /tmp/workflow_id)"
+          n8n execute --id "$(cat /tmp/workflow_id)" | tee /tmp/n8n-execution.log
+          grep -q 'verification.*PASS' /tmp/n8n-execution.log
+          echo "N8N_VERIFICATION_COMPLETE"
