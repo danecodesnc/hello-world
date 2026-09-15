@@ -15,9 +15,9 @@ st.title("🛠️ Dane's AI Support & Automation Portfolio")
 st.caption("Technical Support + APIs + Escalations + Applied AI Automation")
 st.info("Everything in this demo is fictional. No real customer or employer data is used.")
 st.markdown(
-    "**Technical review:** [Source code](https://github.com/danecodesnc/hello-world) · "
-    "[60-second reviewer guide](https://github.com/danecodesnc/hello-world/blob/master/REVIEWER_GUIDE.md) · "
-    "[Verification record](https://github.com/danecodesnc/hello-world/blob/master/VERIFICATION.md)"
+    "**Technical review:** [Source code](https://github.com/danecodesnc/dane-agentic-ai-support-portfolio) · "
+    "[60-second reviewer guide](https://github.com/danecodesnc/dane-agentic-ai-support-portfolio/blob/master/REVIEWER_GUIDE.md) · "
+    "[Verification record](https://github.com/danecodesnc/dane-agentic-ai-support-portfolio/blob/master/VERIFICATION.md)"
 )
 
 st.markdown(
