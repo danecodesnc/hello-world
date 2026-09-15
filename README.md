@@ -4,11 +4,47 @@
 
 **Technical Support + APIs + Escalations + Applied AI Automation**
 
+## 👋 Start here — no technical knowledge needed
+
+### Easiest option: click the live demo
+
+**[▶ OPEN THE LIVE PORTFOLIO](https://ai-support-portfolio-production.up.railway.app)**
+
+Nothing to install. No commands to type. Open the link, choose a tab, and click a button.
+
+### Windows one-click option
+
+If you downloaded this repository to a Windows computer:
+
+1. Double-click **`START_HERE_WINDOWS.bat`**.
+2. The program prepares itself and opens in your browser.
+3. Keep the green launcher window open while using the program.
+4. Close the green window when finished.
+
+Want a normal desktop icon? Double-click **`CREATE_DESKTOP_ICON_WINDOWS.bat`** once. It creates a shortcut called **Dane AI Support Portfolio** on the Windows desktop. After that, use the desktop icon.
+
+> The first local run needs Python. If Python is missing, the launcher explains that in plain English and opens the official Python download page.
+
+---
+
 A public, synthetic-data portfolio showing how enterprise Technical Support and API troubleshooting workflows can be extended with **Python, LLM tool calling, RAG-style retrieval, FastAPI, Postman-ready REST endpoints, deterministic guardrails, n8n workflow design, evaluations, and observability**.
 
 > **Confidentiality:** Every customer, ticket, log, service-status record, product name, and operational example in this repository is fictional/synthetic. No Avalara or other former-employer proprietary information, credentials, customer data, or internal documentation is included.
 
-## What this portfolio demonstrates
+## What can I click in the demo?
+
+The browser application has four simple tabs:
+
+| Tab | What you do | What happens |
+|---|---|---|
+| **Support Agent** | Read the sample ticket and click **Investigate ticket** | The agent gathers synthetic evidence, classifies the problem, recommends troubleshooting, and decides whether escalation is required |
+| **Incident Router** | Read the incident signal and click **Route incident** | The workflow chooses P1/P2/P3-style routing and protects high-risk actions with human approval |
+| **API Diagnostics** | Pick an HTTP status and click **Diagnose API failure** | The tool explains the API error and gives a verification plan |
+| **Architecture** | Just read it | A simple diagram explains how the controlled agent works |
+
+The default **Offline deterministic demo** works without an API key and is the safest mode for an interview demonstration.
+
+## Portfolio projects
 
 | Project | What it demonstrates | Public status |
 |---|---|---|
@@ -16,7 +52,7 @@ A public, synthetic-data portfolio showing how enterprise Technical Support and 
 | **[Incident & Escalation Automation](incident_escalation_automation/)** | P1/P2/P3 routing, human-in-the-loop approval, workflow orchestration, n8n import artifact | Runnable Python logic + importable n8n workflow |
 | **[API Diagnostics Agent](api_diagnostics_agent/)** | HTTP/API troubleshooting for 400/401/403/404/429/500/503/504, verification plans, cURL guidance | Runnable offline |
 | **[FastAPI Support Service](api.py)** | REST endpoints, Pydantic request/response validation, OpenAPI docs, Postman-ready testing surface | Runnable locally |
-| **[Streamlit Demo UI](app.py)** | Recruiter-friendly browser demonstration of all three workflows | Runnable locally |
+| **[Streamlit Demo UI](app.py)** | Recruiter-friendly browser demonstration of the workflows | Live + runnable locally |
 
 ## Architecture
 
@@ -39,62 +75,44 @@ flowchart LR
     LLM -. allow-listed function calls .-> A
 ```
 
-## Why this is an agent rather than a chatbot
+## Why this is an agent rather than just a chatbot
 
-The system is designed around a controlled investigation loop. In optional live mode, the model can request only explicitly approved support functions. The application executes those functions, returns bounded synthetic evidence, and continues the investigation. Consequential actions remain preview-only and high-risk incidents also pass through deterministic Python policy.
+The system is designed around a controlled investigation loop. In optional live mode, the model can request only explicitly approved support functions. The application executes those functions, returns bounded synthetic evidence, and continues the investigation. Consequential actions remain preview-only, and high-risk incidents also pass through deterministic Python policy.
 
-The public demo includes these agent concepts:
+The portfolio demonstrates:
 
-- **Allow-listed tools** instead of unrestricted system access
-- **Retrieval grounding** instead of relying only on model memory
-- **Structured outputs** for predictable downstream handling
-- **Token/context limits** to bound cost, latency, and runaway context
-- **Deterministic guardrails** for P1/high-risk conditions
-- **Human approval** for consequential escalation actions
-- **Regression tests** for classification and policy behavior
-- **Telemetry hooks** for model, latency, token usage, and tools used in live mode
+- allow-listed tools rather than unrestricted system access
+- retrieval grounding rather than relying only on model memory
+- structured outputs for predictable downstream handling
+- token/context limits to bound cost, latency, and runaway context
+- deterministic guardrails for P1/high-risk conditions
+- human approval for consequential escalation actions
+- regression tests for classification and policy behavior
+- telemetry hooks for model, latency, token usage, and tools used in live mode
 
-## Quick start
+## For developers: manual local start
 
-### 1. Install
+The one-click launcher is recommended for Windows. Developers can also run it manually:
 
 ```bash
 python -m venv .venv
-```
-
-**Windows PowerShell**
-
-```powershell
-.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-```
-
-**macOS / Linux**
-
-```bash
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-### 2. Run the browser demo
-
-```bash
 streamlit run app.py
 ```
 
-### 3. Run the REST API
+Run the REST API separately with:
 
 ```bash
 uvicorn api:app --reload
 ```
 
-Then open the interactive API documentation:
+Interactive API documentation:
 
 ```text
 http://127.0.0.1:8000/docs
 ```
 
-### 4. Test with Postman
+### Postman example
 
 ```http
 GET http://127.0.0.1:8000/health
@@ -112,15 +130,9 @@ Content-Type: application/json
 }
 ```
 
-### 5. Run tests
-
-```bash
-pytest -q
-```
-
 ## Optional live LLM mode
 
-The default public demo does **not** require an API key. To exercise live LLM function calling, set environment variables locally:
+The default public demo does **not** require an API key. To exercise live LLM function calling locally, set:
 
 ```text
 OPENAI_API_KEY=your_key_here
@@ -129,11 +141,14 @@ OPENAI_MODEL=gpt-5.6-luna
 
 Never commit `.env`, credentials, production logs, customer identifiers, or secrets.
 
-## Portfolio map
+## Repository map
 
 ```text
 .
-├── app.py                              # Streamlit recruiter/demo UI
+├── START_HERE_WINDOWS.bat              # simple double-click Windows launcher
+├── CREATE_DESKTOP_ICON_WINDOWS.bat     # creates a normal Windows desktop shortcut
+├── Procfile                            # hosted Streamlit start command
+├── app.py                              # recruiter-friendly Streamlit UI
 ├── api.py                              # FastAPI + OpenAPI/Postman surface
 ├── requirements.txt
 ├── test_portfolio.py
@@ -155,26 +170,17 @@ Never commit `.env`, credentials, production logs, customer identifiers, or secr
 
 ## Engineering decisions
 
-### Synthetic by design
-The portfolio demonstrates architecture without exposing proprietary or customer information.
+**Synthetic by design.** The portfolio demonstrates architecture without exposing proprietary or customer information.
 
-### Offline-first reliability
-The core demo works without an external service, which makes interviews and code review reproducible.
+**Offline-first reliability.** The core demo works without an external AI service, making interviews and code review reproducible.
 
-### LLMs do not own high-risk policy
-A probabilistic model may recommend escalation, but P1/high-risk signals are also evaluated deterministically.
+**LLMs do not own high-risk policy.** A probabilistic model may recommend escalation, but P1/high-risk signals are also evaluated deterministically.
 
-### Human-in-the-loop by default
-The public automation creates previews; it does not send real Slack messages, create Jira tickets, modify customer systems, or write production data.
-
-### Current API integration
-Optional live mode uses the OpenAI **Responses API** with function tools. The default cost-sensitive model is `gpt-5.6-luna`, configurable through `OPENAI_MODEL`.
+**Human-in-the-loop by default.** The public automation creates previews; it does not send real Slack messages, create Jira tickets, modify customer systems, or write production data.
 
 ## Interview positioning
 
 This should be described accurately as a **personal portfolio project built from Technical Support domain experience**, not as production AI work performed for a former employer.
-
-A concise explanation:
 
 > “I modernized the support work I already know—API troubleshooting, logs, incident severity, escalation, knowledge retrieval, and customer communication—by building a Python-based agentic support portfolio. The flagship workflow can retrieve evidence, call approved tools, expose REST endpoints through FastAPI, apply deterministic escalation guardrails, and optionally use an LLM through controlled function calling. I kept all public data synthetic so the complete architecture is safe to demonstrate.”
 
@@ -182,7 +188,7 @@ See **[INTERVIEW_GUIDE.md](INTERVIEW_GUIDE.md)** for the 30-second pitch, five-m
 
 ## Verification
 
-The deterministic public suite covers authentication troubleshooting, outage escalation, incident routing, API diagnostics, and REST endpoint behavior. **GitHub Actions is configured to run the suite on every push and pull request.** Live LLM execution is intentionally separate because it requires a user-provided credential.
+The deterministic public suite covers authentication troubleshooting, outage escalation, incident routing, API diagnostics, and REST endpoint behavior. **GitHub Actions runs the suite on every push and pull request.** Live LLM execution remains separate because it requires a user-provided credential.
 
 ---
 
