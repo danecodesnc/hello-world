@@ -91,6 +91,10 @@ The verifier fails unless all of these are observed:
 
 Until that run succeeds with a private `OPENAI_API_KEY`, the portfolio deliberately labels external OpenAI execution as **pending**, not verified.
 
+## Deployment hygiene
+
+The reviewer-facing Railway production environment was cleaned after verification so temporary n8n proof/debug services are not part of the final hosted portfolio. The live `ai-support-portfolio` service remains the production deployment used by reviewers.
+
 ## Interview rule
 
 A repository artifact existing is not treated as evidence that it ran. Claims in this portfolio are intentionally limited to what can be supported by code, automated tests, or an execution record.
