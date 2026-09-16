@@ -38,10 +38,10 @@ The browser application has four simple tabs:
 
 | Tab | What you do | What happens |
 |---|---|---|
-| **Support Agent** | Read the sample ticket and click **Investigate ticket** | The agent gathers synthetic evidence, classifies the problem, recommends troubleshooting, and decides whether escalation is required |
-| **Incident Router** | Read the incident signal and click **Route incident** | The workflow chooses P1/P2/P3-style routing and protects high-risk actions with human approval |
-| **API Diagnostics** | Pick an HTTP status and click **Diagnose API failure** | The tool explains the API error and gives a verification plan |
-| **Architecture** | Just read it | A simple diagram explains how the controlled agent works |
+| **Support Helper** | Read the sample ticket and click **Analyze Support Ticket** | The agent gathers synthetic evidence, classifies the problem, recommends troubleshooting, and decides whether escalation is required |
+| **Incident Router** | Read the incident signal and click **Route Incident** | The workflow chooses P1/P2/P3-style routing and protects high-risk actions with human approval |
+| **API Error Helper** | Pick an HTTP status and click **Explain This API Error** | The tool explains the API error and gives a verification plan |
+| **How It Works** | Just read it | A simple diagram explains how the controlled agent works |
 
 The default **Offline deterministic demo** works without an API key and is the safest mode for an interview demonstration.
 
