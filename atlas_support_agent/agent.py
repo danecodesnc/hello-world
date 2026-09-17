@@ -1,8 +1,18 @@
+from __future__ import annotations
+
 import re
+import time
+import uuid
+
 from pydantic import BaseModel, Field
 
-MAX_TICKET_CHARS = 6000
-MAX_EVIDENCE_ITEMS = 6
+from atlas_support_agent.runtime import (
+    MAX_EVIDENCE_ITEMS,
+    MAX_TICKET_CHARS,
+    bound_text,
+    rough_token_estimate,
+)
+
 HIGH_RISK_TERMS = {"production down", "complete outage", "security breach", "data loss", "data corruption", "credential leak"}
 
 CUSTOMERS = {
@@ -30,11 +40,17 @@ class Investigation(BaseModel):
     likely_causes: list[str]
     troubleshooting_steps: list[str]
     escalate: bool
+    human_approval_required: bool
     escalation_reason: str
+    action_status: str
     customer_response: str
     internal_notes: str
     evidence: list[dict]
     tools_used: list[str]
+    tool_errors: list[str]
+    guardrails_triggered: list[str]
+    decision_trace: list[dict]
+    telemetry: dict
 
 
 def _customer_id(ticket: str) -> str:
@@ -66,32 +82,79 @@ def _classify(ticket: str, logs: list[dict]):
     return "P3", "integration", 0.65, ["Insufficient evidence for a single root cause"], ["Capture the complete request/response", "Collect timestamps and request IDs", "Compare working and failing environments"]
 
 
-def investigate(ticket: str) -> Investigation:
-    ticket = (ticket or "")[:MAX_TICKET_CHARS]
+def investigate(ticket: str, simulate_tool_failure: bool = False) -> Investigation:
+    """Run a bounded synthetic investigation.
+
+    ``simulate_tool_failure`` exists only for a clearly labeled portfolio demo
+    scenario. It lets the failure/escalation path be tested without depending on
+    a real external service.
+    """
+    started = time.perf_counter()
+    run_id = f"run-{uuid.uuid4().hex[:10]}"
+    ticket, was_truncated = bound_text(ticket)
     cid = _customer_id(ticket)
+
     customer = CUSTOMERS.get(cid, {"found": False})
-    logs = [x for x in LOGS if x["customer_id"] == cid]
+    status = STATUS
+    tool_errors: list[str] = []
+    guardrails: list[str] = []
+
+    if simulate_tool_failure:
+        logs: list[dict] = []
+        tool_errors.append("query_logs synthetic failure: diagnostic evidence unavailable")
+        guardrails.append("tool_failure_requires_human_review")
+    else:
+        logs = [x for x in LOGS if x["customer_id"] == cid]
+
+    if was_truncated:
+        guardrails.append("input_truncated_to_configured_budget")
+
     severity, category, confidence, causes, steps = _classify(ticket, logs)
 
     forced = severity == "P1"
     reason = "P1 incidents require human escalation." if forced else "No deterministic high-risk signal detected."
+    if forced:
+        guardrails.append("p1_requires_human_approval")
+
+    if tool_errors:
+        forced = True
+        reason = "A required diagnostic tool failed, so the agent cannot safely complete the investigation without human review."
+
     if not forced:
         for term in HIGH_RISK_TERMS:
             if term in ticket.lower():
                 forced, reason = True, f"High-risk signal detected: {term}."
+                guardrails.append("high_risk_signal_requires_human_approval")
                 break
 
-    evidence = [
+    kb_results = _search_kb(ticket)
+    base_evidence = [
         {"source": "customer_lookup", "detail": customer},
-        {"source": "service_status", "detail": STATUS},
+        {"source": "service_status", "detail": status},
         *[{"source": "log_query", "detail": x} for x in logs[:2]],
-        *_search_kb(ticket),
-    ][:MAX_EVIDENCE_ITEMS]
+        *kb_results,
+    ]
+    if tool_errors:
+        base_evidence.append({"source": "tool_error", "detail": tool_errors[0]})
+
+    reserve = 1 if forced else 0
+    evidence = base_evidence[: max(0, MAX_EVIDENCE_ITEMS - reserve)]
 
     tools = ["search_knowledge_base", "lookup_customer", "check_service_status", "query_logs"]
     if forced:
         tools.append("create_escalation_preview")
-        evidence.append({"source": "escalation_preview", "detail": {"preview_only": True, "severity": severity, "reason": reason}})
+        evidence.append({"source": "escalation_preview", "detail": {"preview_only": True, "severity": severity, "reason": reason, "external_action_taken": False}})
+
+    action_status = "awaiting_human_approval" if forced else "recommendation_only_no_external_action"
+    latency_ms = round((time.perf_counter() - started) * 1000, 2)
+
+    decision_trace = [
+        {"step": "input_guardrail", "result": "truncated" if was_truncated else "within_budget"},
+        {"step": "evidence_collection", "result": f"{len(evidence)} bounded evidence items"},
+        {"step": "classification", "result": {"severity": severity, "category": category, "confidence": confidence}},
+        {"step": "policy", "result": {"human_approval_required": forced, "reason": reason}},
+        {"step": "action", "result": action_status},
+    ]
 
     return Investigation(
         severity=severity,
@@ -100,9 +163,26 @@ def investigate(ticket: str) -> Investigation:
         likely_causes=causes,
         troubleshooting_steps=steps,
         escalate=forced,
+        human_approval_required=forced,
         escalation_reason=reason,
+        action_status=action_status,
         customer_response=f"I identified this as a {category} issue with {severity} priority. First, {steps[0].lower()}. I would validate the evidence before making a consequential change.",
         internal_notes=f"customer={cid}; category={category}; confidence={confidence:.2f}; evidence_items={len(evidence)}",
         evidence=evidence,
         tools_used=tools,
+        tool_errors=tool_errors,
+        guardrails_triggered=guardrails,
+        decision_trace=decision_trace,
+        telemetry={
+            "request_id": run_id,
+            "mode": "offline_deterministic",
+            "request_chars": len(ticket),
+            "approx_input_tokens": rough_token_estimate(ticket),
+            "token_measurement": "rough_local_estimate_not_provider_usage",
+            "context_items": len(evidence),
+            "max_ticket_chars": MAX_TICKET_CHARS,
+            "max_evidence_items": MAX_EVIDENCE_ITEMS,
+            "latency_ms": latency_ms,
+            "external_action_taken": False,
+        },
     )
