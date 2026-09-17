@@ -29,7 +29,9 @@ class FakeResponses:
 
 
 class FakeClient:
-    def __init__(self, api_key=None):
+    def __init__(self, api_key=None, **kwargs):
+        self.api_key = api_key
+        self.options = kwargs
         self.responses = FakeResponses()
 
 
@@ -42,10 +44,15 @@ def test_function_call_loop_and_telemetry(monkeypatch):
     )
 
     assert result["mode"] == "live_llm"
+    assert result["request_id"].startswith("live-")
     assert result["final_text"] == "Synthetic live-loop verification complete."
     assert result["tools_used"] == ["lookup_customer"]
+    assert result["tool_events"][0]["status"] == "ok"
     assert result["telemetry"]["input_tokens"] == 150
     assert result["telemetry"]["output_tokens"] == 30
+    assert result["telemetry"]["total_tokens"] == 180
+    assert result["telemetry"]["cached_tokens"] == 0
     assert result["telemetry"]["latency_ms"] >= 0
     assert result["telemetry"]["tool_round_limit"] == live_agent.MAX_TOOL_ROUNDS
     assert result["telemetry"]["max_output_tokens"] == live_agent.MAX_OUTPUT_TOKENS
+    assert result["telemetry"]["external_action_taken"] is False
