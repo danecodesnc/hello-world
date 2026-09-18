@@ -21,7 +21,7 @@ The GitHub Actions workflow `.github/workflows/tests.yml` installs `requirements
 - rough offline token-estimate labeling
 - tool usage and structured output
 
-### Human-in-the-loop behavior
+### Interview-focused support operations behavior\n\n- SAML SSO / SCIM classification and generic identity diagnostics\n- reproduction-status calculation\n- missing-information detection\n- engineering-ready handoff generation\n- customer-facing update generation\n- explainable duplicate grouping\n- synthetic support-operations metrics\n- REST endpoints for handoff, customer updates, duplicates, and metrics\n### Human-in-the-loop behavior
 
 - P1 incidents require human approval
 - approve/reject/escalate decisions produce a record
