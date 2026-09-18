@@ -17,7 +17,7 @@ Do not add:
 - private endpoints;
 - proprietary incident details.
 
-## Secret handling
+## Synthetic identity and operations data\n\nThe SAML SSO / SCIM scenario, support tickets, SLA values, duplicate groups, browser/network evidence, request IDs, customer names, and dashboard metrics are all fictional. The identity scenario is a generic enterprise troubleshooting model and must not be described as TheyDo's internal implementation.\n## Secret handling
 
 - `OPENAI_API_KEY` is read from the environment.
 - `.env` is ignored by Git and must never be committed.
