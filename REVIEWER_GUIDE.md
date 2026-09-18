@@ -12,7 +12,11 @@ You will see a plain-English investigation of a synthetic HTTP 401 credential-ro
 
 ## What this demonstrates
 
-- **Python** support investigation and automation logic\n- **Engineering handoff generation** with expected/actual behavior, reproduction, evidence, confidence, and next engineering checks\n- **Generic SAML SSO / SCIM diagnostics** using synthetic evidence only\n- **Explainable duplicate/pattern detection** and synthetic Support Operations metrics\n- **Missing-information detection** so vague tickets request evidence instead of inventing it
+- **Python** support investigation and automation logic
+- **Engineering handoff generation** with expected/actual behavior, reproduction, evidence, confidence, and next engineering checks
+- **Generic SAML SSO / SCIM diagnostics** using synthetic evidence only
+- **Explainable duplicate/pattern detection** and synthetic Support Operations metrics
+- **Missing-information detection** so vague tickets request evidence instead of inventing it
 - **FastAPI** REST service with structured request/response validation
 - **Postman-ready** API endpoints
 - **Controlled agent architecture** with allow-listed tools
