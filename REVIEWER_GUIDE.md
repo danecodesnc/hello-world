@@ -6,13 +6,13 @@ This portfolio is designed to be easy to evaluate quickly.
 
 **Live demo:** https://ai-support-portfolio-production.up.railway.app
 
-Use the default sample ticket in **Support Helper** and click **Analyze Support Ticket**.
+Use the default sample ticket in **Customer Issue Investigation** and click **Analyze Customer Issue**.
 
-You will see a plain-English investigation of a synthetic HTTP 401 credential-rotation issue, including severity, problem type, likely causes, troubleshooting steps, escalation policy, and a customer-facing explanation.
+You will see a plain-English investigation of a synthetic HTTP 401 credential-rotation issue, including severity, reproduction status, technical evidence, missing information, troubleshooting steps, a customer-facing update, and an engineering-ready handoff.
 
 ## What this demonstrates
 
-- **Python** support investigation and automation logic
+- **Python** support investigation and automation logic\n- **Engineering handoff generation** with expected/actual behavior, reproduction, evidence, confidence, and next engineering checks\n- **Generic SAML SSO / SCIM diagnostics** using synthetic evidence only\n- **Explainable duplicate/pattern detection** and synthetic Support Operations metrics\n- **Missing-information detection** so vague tickets request evidence instead of inventing it
 - **FastAPI** REST service with structured request/response validation
 - **Postman-ready** API endpoints
 - **Controlled agent architecture** with allow-listed tools
@@ -28,9 +28,9 @@ You will see a plain-English investigation of a synthetic HTTP 401 credential-ro
 
 1. Open the **live demo** and run the default Support Helper example.
 2. Open **How It Works** in the demo to see the architecture in plain English.
-3. Review [`VERIFICATION.md`](VERIFICATION.md) for evidence of what has actually run.
-4. Review [`atlas_support_agent/live_agent.py`](atlas_support_agent/live_agent.py) for the bounded Responses API function-calling loop.
-5. Review [`.github/workflows/n8n-verification.yml`](.github/workflows/n8n-verification.yml) and [`n8n_runner/workflow.json`](n8n_runner/workflow.json) for the executed n8n workflow.
+5. Review [`VERIFICATION.md`](VERIFICATION.md) for evidence of what has actually run.
+6. Review [`atlas_support_agent/live_agent.py`](atlas_support_agent/live_agent.py) for the bounded Responses API function-calling loop.
+7. Review [`.github/workflows/n8n-verification.yml`](.github/workflows/n8n-verification.yml) and [`n8n_runner/workflow.json`](n8n_runner/workflow.json) for the executed n8n workflow.
 
 ## Verification boundary
 
