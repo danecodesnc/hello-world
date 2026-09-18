@@ -8,7 +8,17 @@ The portfolio uses deterministic regression tests for the public-safe path and s
 pytest -q
 ```
 
-The GitHub Actions workflow `.github/workflows/tests.yml` installs `requirements.txt` on Python 3.12 and runs the same command on pushes and pull requests.
+The GitHub Actions workflow `.github/workflows/tests.yml` installs `requirements.txt` on Python 3.12 and runs the same command on pushes and pull requests. It also compiles `app.py` and `api.py`, imports the main support-operation modules, and starts Streamlit long enough to require a healthy `/_stcore/health` response before running pytest.
+
+## Latest verified run
+
+GitHub Actions run **#94** on the upgraded portfolio completed successfully with:
+
+- Python compile check: PASS
+- module import smoke check: PASS
+- Streamlit boot/health check: PASS
+- regression suite: **30 passed**
+- two dependency deprecation warnings; zero test failures
 
 ## What the regression suite covers
 
