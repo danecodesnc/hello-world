@@ -1,9 +1,9 @@
-# Dane Edwards — Agentic AI Support & Automation Portfolio
+# Dane Edwards — AI-Powered Technical Support Operations Portfolio
 
 [![Portfolio Tests](https://github.com/danecodesnc/dane-agentic-ai-support-portfolio/actions/workflows/tests.yml/badge.svg)](https://github.com/danecodesnc/dane-agentic-ai-support-portfolio/actions/workflows/tests.yml)
 [![n8n Workflow Verification](https://github.com/danecodesnc/dane-agentic-ai-support-portfolio/actions/workflows/n8n-verification.yml/badge.svg)](https://github.com/danecodesnc/dane-agentic-ai-support-portfolio/actions/workflows/n8n-verification.yml)
 
-**Technical Support + APIs + Escalations + Applied AI Automation**
+**Customer Issue Investigation + APIs + Engineering Handoffs + Support Operations + Applied AI Automation**
 
 ## Start here — no technical knowledge needed
 
@@ -46,7 +46,7 @@ This is a public, synthetic-data portfolio showing how enterprise Technical Supp
 
 > **Confidentiality:** Every customer, ticket, log, service-status record, product name, and operational example in this repository is fictional/synthetic. No Avalara or other former-employer proprietary information, credentials, customer data, or internal documentation is included.
 
-## Why did I build it?
+## Interview-focused support operations workflow\n\nThe recruiter-facing demo now communicates one end-to-end support lifecycle:\n\n```text\nCustomer report\n  ↓\nEvidence gathering\n  ↓\nTechnical investigation + reproduction assessment\n  ↓\nCustomer update + engineering handoff\n  ↓\nDeterministic escalation guardrails\n  ↓\nHuman review when required\n  ↓\nSynthetic support-operations analytics\n```\n\nNew interview-focused capabilities include:\n\n- engineering-ready bug report generation;\n- separate customer-facing communication;\n- generic synthetic SAML SSO / SCIM troubleshooting;\n- browser/network-style technical evidence;\n- explicit reproduction status and missing-information detection;\n- explainable deterministic duplicate/pattern detection;\n- a synthetic support-operations dashboard;\n- REST endpoints for handoffs, customer updates, duplicates, and metrics.\n\nThe SSO/SCIM example is a generic enterprise identity scenario and is not presented as TheyDo's internal authentication implementation.\n## Why did I build it?
 
 My background is in Technical Support, Technical Account Management, API/integration troubleshooting, escalations, incident handling, and customer-facing SaaS work.
 
@@ -115,13 +115,13 @@ The optional live path uses the same synthetic tools through LLM function callin
 
 The Streamlit UI includes several scenarios so an interviewer can see different behavior without inventing inputs:
 
-1. **401 credential rotation** — recommended first demo;
-2. **Ambiguous integration issue**;
-3. **Low-confidence unknown issue**;
-4. **P1 complete outage**;
-5. **Synthetic diagnostic-tool failure**;
-6. **Malformed/too-short input**;
-7. **Complex multi-tool timeout case**.
+1. **401 credential rotation** — recommended first demo;\n2. **SAML SSO / SCIM provisioning failure** — generic enterprise identity scenario;
+3. **Ambiguous integration issue**;
+4. **Low-confidence unknown issue**;
+5. **P1 complete outage**;
+6. **Synthetic diagnostic-tool failure**;
+7. **Malformed/too-short input**;
+8. **Complex multi-tool timeout case**.
 
 The Incident Router also demonstrates an interactive **Approve / Reject / Escalate** human-decision step for high-risk routes while still reporting `external_action_taken: false`.
 
