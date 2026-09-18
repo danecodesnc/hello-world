@@ -30,11 +30,15 @@ You will see a plain-English investigation of a synthetic HTTP 401 credential-ro
 
 ## Recommended 3-minute review
 
-1. Open the **live demo** and run the default Support Helper example.
-2. Open **How It Works** in the demo to see the architecture in plain English.
-5. Review [`VERIFICATION.md`](VERIFICATION.md) for evidence of what has actually run.
-6. Review [`atlas_support_agent/live_agent.py`](atlas_support_agent/live_agent.py) for the bounded Responses API function-calling loop.
-7. Review [`.github/workflows/n8n-verification.yml`](.github/workflows/n8n-verification.yml) and [`n8n_runner/workflow.json`](n8n_runner/workflow.json) for the executed n8n workflow.
+1. Open the **live demo** and run the default **Customer Issue Investigation** scenario.
+2. Generate the **Customer Update** and explain the customer-facing communication boundary.
+3. Generate the **Engineering Handoff** and show reproduction, evidence, confidence, and recommended engineering investigation.
+4. Open **Support Operations** to show deterministic duplicate detection and synthetic support metrics.
+5. Run the **Synthetic diagnostic-tool failure** scenario and show that incomplete evidence routes to human review.
+6. Open **Architecture & Automation** to show the n8n workflow and deterministic-vs-probabilistic control boundaries.
+7. Review `VERIFICATION.md` for evidence of what has actually run.
+8. Review `atlas_support_agent/live_agent.py` for the bounded Responses API function-calling loop.
+9. Review `.github/workflows/n8n-verification.yml` and `n8n_runner/workflow.json` for the executed n8n workflow.
 
 ## Verification boundary
 
@@ -46,8 +50,8 @@ The portfolio intentionally distinguishes between code that exists and code that
 
 ## Safety and confidentiality
 
-All customers, tickets, logs, status records, and product examples are synthetic. No Avalara or former-employer customer information, credentials, internal documentation, or proprietary data is included.
+All customers, tickets, logs, status records, SAML/SCIM examples, request IDs, browser/network evidence, SLA values, dashboard metrics, and product examples are synthetic. No Avalara or former-employer customer information, credentials, internal documentation, or proprietary data is included. The identity scenario is generic enterprise troubleshooting and does not represent TheyDo's internal implementation.
 
 ## One-sentence summary
 
-> I modernized the Technical Support and API troubleshooting work I already know by building a Python-based support automation portfolio with controlled agent tooling, REST APIs, deterministic guardrails, n8n orchestration, automated testing, and human approval boundaries.
+> I modernized the Technical Support and API troubleshooting work I already know by building a Python-based support-operations portfolio with controlled agent tooling, REST APIs, evidence-based engineering handoffs, deterministic guardrails, n8n orchestration, automated testing, and human approval boundaries.
