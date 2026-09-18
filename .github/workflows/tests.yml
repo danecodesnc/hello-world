@@ -10,12 +10,36 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
           cache: pip
+
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
+
+      - name: Compile and import smoke checks
+        run: |
+          python -m py_compile app.py api.py
+          python -c "import support_operations, identity_diagnostics, atlas_support_agent, api; print('import smoke check: PASS')"
+
+      - name: Streamlit boot smoke check
+        run: |
+          streamlit run app.py --server.address 127.0.0.1 --server.port 8501 --server.headless true --browser.gatherUsageStats false > /tmp/streamlit.log 2>&1 &
+          STREAMLIT_PID=$!
+          trap 'kill $STREAMLIT_PID 2>/dev/null || true' EXIT
+          for i in {1..20}; do
+            if curl --fail --silent http://127.0.0.1:8501/_stcore/health | grep -q "ok"; then
+              echo "Streamlit boot smoke check: PASS"
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/streamlit.log
+          echo "Streamlit did not become healthy."
+          exit 1
+
       - name: Run regression suite
         run: pytest -q
