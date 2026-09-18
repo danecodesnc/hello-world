@@ -9,6 +9,7 @@ This file separates **implemented**, **automated-test verified**, and **real ext
 | Python support investigation | Pytest regression suite | ✅ Verified |
 | API diagnostics | Pytest regression suite | ✅ Verified |
 | FastAPI endpoint behavior | FastAPI TestClient regression tests | ✅ Verified |
+| Support-operations extension | Engineering handoff, customer update, reproduction, missing-information, SSO/SCIM, duplicate grouping, metrics, and new API regression tests | ✅ Automated-test verified |
 | P1/high-risk escalation guardrails | Regression tests | ✅ Verified |
 | LLM function-call control loop | `atlas_support_agent/test_live_agent_loop.py` with deterministic mock provider | ✅ Application control loop verified |
 | Token/tool/latency telemetry plumbing | `atlas_support_agent/test_live_agent_loop.py` | ✅ Instrumentation verified |
@@ -19,7 +20,7 @@ This file separates **implemented**, **automated-test verified**, and **real ext
 
 The regression suite now includes deterministic coverage for engineering handoffs, customer updates, reproduction status, missing-information detection, generic SSO/SCIM classification, duplicate grouping, synthetic metrics, and their FastAPI surfaces. These features remain synthetic and perform no external writes.
 
-This section describes the intended automated verification scope. A specific commit is only treated as passing after its GitHub Actions regression run succeeds.
+GitHub Actions run **#94** completed successfully on the upgraded portfolio: compile/import smoke checks passed, the Streamlit health check passed, and pytest reported **30 passed, 2 dependency deprecation warnings, 0 failures**.
 ## n8n execution evidence
 
 Successful GitHub Actions run:
@@ -95,6 +96,14 @@ The verifier fails unless all of these are observed:
 - positive measured latency.
 
 Until that run succeeds with a private `OPENAI_API_KEY`, the portfolio deliberately labels external OpenAI execution as **pending**, not verified.
+
+## Current deployment verification
+
+Railway production service `ai-support-portfolio` reported a terminal **SUCCESS** deployment for the upgraded application and served HTTP 200 responses on Streamlit health endpoints. The public domain remains:
+
+`https://ai-support-portfolio-production.up.railway.app`
+
+The hosted application is intentionally the Streamlit recruiter-facing surface; the FastAPI application remains verified through automated TestClient regression tests rather than being exposed as a second public Railway process.
 
 ## Deployment hygiene
 
