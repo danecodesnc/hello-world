@@ -12,24 +12,28 @@ from atlas_support_agent.runtime import (
     bound_text,
     rough_token_estimate,
 )
+from identity_diagnostics.sso_scim import diagnose_sso_scim
 
 HIGH_RISK_TERMS = {"production down", "complete outage", "security breach", "data loss", "data corruption", "credential leak"}
 
 CUSTOMERS = {
     "CUST-101": {"plan": "Enterprise", "environment": "production", "integration": "REST API", "last_credential_rotation": "2026-09-01"},
     "CUST-202": {"plan": "Business", "environment": "production", "integration": "REST API"},
+    "CUST-303": {"plan": "Enterprise", "environment": "production", "integration": "SAML SSO + SCIM", "workspace": "acme-demo"},
 }
 STATUS = {"state": "operational", "incidents": []}
 LOGS = [
     {"customer_id": "CUST-101", "status": 401, "message": "invalid api key", "request_id": "req-demo-401-a"},
     {"customer_id": "CUST-101", "status": 401, "message": "authorization rejected", "request_id": "req-demo-401-b"},
     {"customer_id": "CUST-202", "status": 504, "message": "upstream timeout", "request_id": "req-demo-504-a"},
+    {"customer_id": "CUST-303", "status": 403, "message": "workspace user mapping failed after successful SAML response", "request_id": "req-demo-sso-303"},
 ]
 KB = [
     ("401 credential rotation", "If Postman works but production returns 401 after a rotation, compare the exact Authorization header and secret source used by the production runtime. Confirm the new credential propagated to the correct environment."),
     ("504 timeout", "Capture request IDs and timestamps, compare service health, and review bounded retry/backoff behavior."),
     ("429 rate limit", "Honor Retry-After, use exponential backoff with jitter, and reduce burst concurrency."),
     ("duplicate writes idempotency", "Before replaying a write, confirm whether the endpoint supports an idempotency key and whether a retry could duplicate data."),
+    ("SAML SSO SCIM provisioning", "When IdP authentication succeeds but application access fails, compare NameID/email mapping, assertion attributes, SCIM provisioning results, and workspace/domain assignment."),
 ]
 
 
@@ -55,7 +59,11 @@ class Investigation(BaseModel):
 
 def _customer_id(ticket: str) -> str:
     m = re.search(r"CUST-\d+", ticket.upper())
-    return m.group(0) if m else "CUST-101"
+    if m:
+        return m.group(0)
+    if "acme" in ticket.lower() or "saml" in ticket.lower() or "scim" in ticket.lower():
+        return "CUST-303"
+    return "CUST-101"
 
 
 def _search_kb(ticket: str) -> list[dict]:
@@ -73,6 +81,15 @@ def _classify(ticket: str, logs: list[dict]):
     log_text = " ".join(str(x).lower() for x in logs)
     if "production down" in t or "complete outage" in t:
         return "P1", "availability", 0.97, ["Service availability incident"], ["Confirm blast radius", "Escalate to an incident owner", "Preserve request IDs and timestamps"]
+    if any(x in t for x in ["saml", "scim", "identity provider", "idp", "workspace"]) and any(x in t for x in ["access", "missing", "provision", "authenticate", "login"]):
+        identity = diagnose_sso_scim(ticket)
+        return (
+            identity["severity"],
+            identity["category"],
+            identity["confidence"],
+            [identity["likely_cause"]],
+            identity["checks"],
+        )
     if "401" in t or "unauthorized" in t or "invalid api key" in log_text:
         return "P2", "authentication", 0.94, ["Stale or mismatched production credential", "Credential rotation did not propagate to the production runtime"], ["Compare the production Authorization header to the working Postman request", "Verify the secret source/environment", "Use request IDs to confirm the rejected credential path"]
     if "504" in t or "timeout" in t or "upstream timeout" in log_text:
@@ -85,7 +102,7 @@ def _classify(ticket: str, logs: list[dict]):
 def investigate(ticket: str, simulate_tool_failure: bool = False) -> Investigation:
     """Run a bounded synthetic investigation.
 
-    ``simulate_tool_failure`` exists only for a clearly labeled portfolio demo
+    simulate_tool_failure exists only for a clearly labeled portfolio demo
     scenario. It lets the failure/escalation path be tested without depending on
     a real external service.
     """
@@ -134,6 +151,8 @@ def investigate(ticket: str, simulate_tool_failure: bool = False) -> Investigati
         *[{"source": "log_query", "detail": x} for x in logs[:2]],
         *kb_results,
     ]
+    if category == "identity_sso_scim":
+        base_evidence.append({"source": "identity_diagnostics", "detail": diagnose_sso_scim(ticket)["evidence"]})
     if tool_errors:
         base_evidence.append({"source": "tool_error", "detail": tool_errors[0]})
 
@@ -141,6 +160,8 @@ def investigate(ticket: str, simulate_tool_failure: bool = False) -> Investigati
     evidence = base_evidence[: max(0, MAX_EVIDENCE_ITEMS - reserve)]
 
     tools = ["search_knowledge_base", "lookup_customer", "check_service_status", "query_logs"]
+    if category == "identity_sso_scim":
+        tools.append("diagnose_sso_scim")
     if forced:
         tools.append("create_escalation_preview")
         evidence.append({"source": "escalation_preview", "detail": {"preview_only": True, "severity": severity, "reason": reason, "external_action_taken": False}})
@@ -166,7 +187,7 @@ def investigate(ticket: str, simulate_tool_failure: bool = False) -> Investigati
         human_approval_required=forced,
         escalation_reason=reason,
         action_status=action_status,
-        customer_response=f"I identified this as a {category} issue with {severity} priority. First, {steps[0].lower()}. I would validate the evidence before making a consequential change.",
+        customer_response=f"I identified this as a {category.replace('_', ' ')} issue with {severity} priority. First, {steps[0].lower()}. I would validate the evidence before making a consequential change.",
         internal_notes=f"customer={cid}; category={category}; confidence={confidence:.2f}; evidence_items={len(evidence)}",
         evidence=evidence,
         tools_used=tools,
