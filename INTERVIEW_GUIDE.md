@@ -205,6 +205,53 @@ This project does **not** demonstrate:
 
 The correct description is a personal applied-AI portfolio built from real Technical Support/API troubleshooting domain experience.
 
+# TheyDo Interview Demo
+
+## 30-second explanation
+
+> I built a small support-operations system around the work I already know: customer troubleshooting, APIs, evidence gathering, escalation, and communication. A customer report becomes a bounded investigation, reproduction assessment, customer update, and engineering-ready handoff. I also added a generic SSO/SCIM scenario, explainable duplicate detection, synthetic support metrics, n8n orchestration, and human approval for high-risk paths. The public demo is deterministic and synthetic; the optional live LLM path is separate and credential-gated.
+
+## Recommended 3-minute walkthrough
+
+1. Open **Customer Issue Investigation**.
+2. Run **401 credential rotation**.
+3. Point out priority, evidence, reproduction status, and missing-information handling.
+4. Click **Generate Customer Update**.
+5. Click **Generate Engineering Handoff** and explain that Support should give Engineering reproducible evidence rather than a vague complaint.
+6. Briefly select **SAML SSO / SCIM provisioning failure** and explain that it is a generic synthetic enterprise identity scenario.
+7. Open **Support Operations** and show duplicate groups plus synthetic SLA/issue metrics.
+8. Run **Synthetic diagnostic-tool failure** and show that evidence failure reduces autonomy and forces human review.
+9. Open **Incident & Escalation** for the P1 approval boundary if time allows.
+10. Finish in **Architecture & Automation** with the n8n workflow and deterministic-vs-probabilistic split.
+
+## Simple answers to likely TheyDo questions
+
+**What problem does this solve?**  
+It automates repetitive evidence gathering and formatting around a support investigation, while keeping important escalation decisions under deterministic rules and human control.
+
+**How would this help a support team scale?**  
+It standardizes what information Support collects, spots repeated issue patterns, reduces duplicate investigation work, and produces consistent customer and engineering communication.
+
+**Why separate customer communication from engineering handoff?**  
+Customers need a clear explanation and next step. Engineering needs reproduction steps, evidence, environment, impact, and technical hypotheses. Mixing the two usually creates either confusing customer messages or weak bug reports.
+
+**How do you prevent the AI from hallucinating?**  
+The public path is deterministic. In the optional live path the model can only request allow-listed tools, context is bounded, and high-risk policy, permissions, execution limits, and external-write rules stay in Python rather than in the model.
+
+**What happens when evidence is incomplete?**  
+The workflow lowers confidence, marks the issue as unable or only partially reproducible, lists the exact missing evidence, and asks the customer for it instead of inventing a root cause.
+
+**How would you connect this to a real ticketing system?**  
+I would add a least-privilege connector behind the existing domain functions, then enforce authentication, RBAC, audit logging, PII controls, rate limits, idempotency, and explicit write authorization before enabling ticket changes.
+
+**Why build an SSO/SCIM scenario?**  
+Enterprise support often crosses identity, provisioning, workspace access, and configuration boundaries. I wanted to show how I would separate an IdP authentication success from an application or provisioning failure without pretending to know a specific customer's internal implementation.
+
+**How does duplicate detection work?**  
+In this portfolio it uses transparent deterministic keyword and category rules over synthetic tickets. The UI explains the shared characteristics and I do not call it machine learning.
+
+**How would you productionize it?**  
+Add enterprise identity/RBAC, tenant isolation, durable audit/tracing, secrets management, PII redaction, real connectors, ACL-aware retrieval, stronger injection defenses, rate limiting, formal eval data, load testing, model fallbacks, and production monitoring.
 # Likely interview questions
 
 ## 1. What problem were you trying to solve?

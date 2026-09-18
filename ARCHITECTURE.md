@@ -107,6 +107,19 @@ n8n represents the orchestration layer: receive event → normalize → classify
 
 This deterministic helper demonstrates HTTP/API troubleshooting knowledge separately from the LLM path. It produces explanations, verification checks, escalation guidance, and an example cURL command for common HTTP errors.
 
+## Support-operations modules
+
+### Engineering handoff / customer communication — `support_operations/core.py`
+
+Reusable deterministic functions derive reproduction status, missing evidence, technical evidence, an engineering-ready handoff, and a separate customer-facing update from the bounded investigation result. The Streamlit layer renders these outputs but does not own the domain logic.
+
+### Pattern detection / metrics — `support_operations/core.py`
+
+The Support Operations view uses a clearly labeled synthetic ticket set. Duplicate groups are created with transparent keyword/category rules and explain why tickets were grouped. The project does not represent these deterministic rules as a trained ML classifier.
+
+### Generic identity diagnostics — `identity_diagnostics/sso_scim.py`
+
+A synthetic SAML SSO / SCIM scenario models successful IdP authentication followed by application/workspace access or provisioning problems. It is intentionally generic and does not represent TheyDo's internal identity architecture.
 ## Probabilistic vs. deterministic responsibilities
 
 | Responsibility | LLM / probabilistic | Python / deterministic |

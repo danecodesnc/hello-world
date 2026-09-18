@@ -17,6 +17,9 @@ Do not add:
 - private endpoints;
 - proprietary incident details.
 
+## Synthetic identity and operations data
+
+The SAML SSO / SCIM scenario, support tickets, SLA values, duplicate groups, browser/network evidence, request IDs, customer names, and dashboard metrics are all fictional. The identity scenario is a generic enterprise troubleshooting model and must not be described as TheyDo's internal implementation.
 ## Secret handling
 
 - `OPENAI_API_KEY` is read from the environment.

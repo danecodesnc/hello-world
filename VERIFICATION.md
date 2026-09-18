@@ -15,6 +15,11 @@ This file separates **implemented**, **automated-test verified**, and **real ext
 | n8n orchestration | `.github/workflows/n8n-verification.yml` using official `n8nio/n8n` container | ✅ Real n8n import + execution verified |
 | External OpenAI Responses API | `scripts/verify_live_llm.py` + manual GitHub workflow | ⏳ Credential-gated; not marked verified until a real run passes |
 
+## Support-operations verification scope
+
+The regression suite now includes deterministic coverage for engineering handoffs, customer updates, reproduction status, missing-information detection, generic SSO/SCIM classification, duplicate grouping, synthetic metrics, and their FastAPI surfaces. These features remain synthetic and perform no external writes.
+
+This section describes the intended automated verification scope. A specific commit is only treated as passing after its GitHub Actions regression run succeeds.
 ## n8n execution evidence
 
 Successful GitHub Actions run:

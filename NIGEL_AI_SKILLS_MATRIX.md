@@ -29,3 +29,7 @@ The strongest accurate description is:
 > I am a Technical Support / TAM professional who has begun building practical agentic-AI systems around workflows I already understand deeply: API troubleshooting, evidence gathering, incident severity, escalation, customer communication, and support automation.
 
 Do not describe the project as former-employer production work, do not claim years of AI-engineering experience, and do not claim a real external LLM call has been verified until the credential-gated verification has actually passed.
+
+## Support-operations extension
+
+The interview-focused extension adds deterministic engineering handoffs, customer communications, generic SAML/SCIM diagnostics, explainable duplicate grouping, synthetic support metrics, and additional FastAPI surfaces. These additions reuse the same Python/tool-boundary/guardrail principles documented above and do not change the portfolio's verification claims.
