@@ -130,7 +130,7 @@ The public demo keeps external writes disabled.
 
 ## What does the agent actually do?
 
-The flagship Support Helper can:
+The flagship Customer Issue Investigation workflow can:
 
 1. accept a synthetic support ticket;
 2. bound the input;
